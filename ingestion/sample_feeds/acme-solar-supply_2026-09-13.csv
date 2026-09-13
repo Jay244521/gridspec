@@ -1,0 +1,3 @@
+SKU,Brand,Model,Category,Description,Voltage,Chemistry,Capacity_kWh,Certifications,Form_Factor,Price,Qty_On_Hand,Lead_Time,CAD_URL,Schematic_URL,Datasheet_URL
+ACM-BP-4814,EcoVolt,EV-4814,battery_pack,"48V 14.3kWh LiFePO4 wall-mount pack",48,LiFePO4,14.3,"UL9540, UL1973",wall_mount,4599.00,32,3,https://cad.example.com/ev-4814.step,https://schem.example.com/ev-4814.pdf,https://ds.example.com/ev-4814.pdf
+ACM-INV-7K,SolArc,SA-7000X,inverter,"7kW hybrid inverter",240,,,"UL1741",rack_mount,1899.50,18,5,https://cad.example.com/sa-7000x.step,https://schem.example.com/sa-7000x.pdf,https://ds.example.com/sa-7000x.pdf
