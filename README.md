@@ -93,6 +93,15 @@ Pages/routes:
   and performs Automated PO Dispatch: splits the order into one
   `purchase_order` per distributor with a blind packing slip, on Net-30 payout
   terms. PO generation never happens before payment actually clears.
+- `/ops/purchase-orders` — ops-only list of purchase orders with links to the
+  two generated documents per PO: `/ops/purchase-orders/[id]/po` (names the
+  distributor, states what's owed to them — sent to their fulfillment desk)
+  and `/ops/purchase-orders/[id]/packing-slip` (GridSpec-branded, no
+  distributor identity or pricing — this is what actually ships to the job
+  site, replacing the distributor's own packing slip, which is what makes
+  drop-shipping "blind"). There's no distributor portal yet, so an operator
+  currently has to view/print these and forward the PO to the distributor
+  manually. Gated by `OPS_ADMIN_EMAILS` (see below) — never contractor-reachable.
 
 ### Auth model
 
@@ -118,12 +127,18 @@ Pages/routes:
   RLS); `lib/supabase.ts` uses the service role key (bypasses RLS) and is
   only for the ingestion pipeline and the Stripe webhook, which have no user
   session to act as.
+- `OPS_ADMIN_EMAILS` (comma-separated) gates `/ops/*` — there's no real
+  platform-admin role yet, so `lib/ops-auth.ts` just checks the signed-in
+  Supabase Auth user's email against this env var. Set it to whichever
+  account(s) should be able to see distributor identity and payout amounts;
+  this must never be a contractor's own account.
 
 ### Known gaps (not yet built)
 
-- No actual distributor-facing PO/packing-slip document generation or email
-  dispatch — `purchase_orders` rows are created but nothing downstream
-  consumes them yet.
+- PO/packing-slip documents are generated and viewable (`/ops/purchase-orders`),
+  but there's no distributor portal or automated email dispatch yet — an
+  operator has to manually forward the PO to the distributor's fulfillment
+  desk today.
 - No scheduled job to reconcile/pay out `purchase_orders` at their
   `payout_due_at` — Net-30/60 payout is modeled in the schema but not executed.
 - BOM SKU matching is a naive token-overlap heuristic, not fuzzy/ML matching.
