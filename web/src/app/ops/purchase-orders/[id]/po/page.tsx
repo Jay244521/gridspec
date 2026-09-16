@@ -25,22 +25,26 @@ async function loadPo(id: string) {
     supabase.from("orders").select("job_site_address, created_at").eq("id", po.order_id).single(),
     supabase
       .from("order_lines")
-      .select("quantity, unit_price_cents, products(distributor_sku, manufacturer, model_name)")
+      .select("quantity, unit_price_cents, products(distributor_id, distributor_sku, manufacturer, model_name)")
       .eq("order_id", po.order_id),
   ]);
 
+  type Product = { distributor_id: string; distributor_sku: string; manufacturer: string; model_name: string };
   type LineRow = {
     quantity: number;
     unit_price_cents: number;
-    products: { distributor_sku: string; manufacturer: string; model_name: string } | { distributor_sku: string; manufacturer: string; model_name: string }[] | null;
+    products: Product | Product[] | null;
   };
 
+  // A single order can span multiple distributors (split fulfillment) — this
+  // PO must only list the items THIS distributor is actually being paid for,
+  // never the full order's lines.
   const distributorLines = ((lines ?? []) as LineRow[])
     .map((l) => ({
       ...l,
       product: Array.isArray(l.products) ? l.products[0] : l.products,
     }))
-    .filter((l) => l.product != null);
+    .filter((l) => l.product?.distributor_id === po.distributor_id);
 
   return { po, distributor, order, lines: distributorLines };
 }
