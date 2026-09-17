@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getBrowserClient } from "@/lib/supabase-browser";
+import Logo from "./Logo";
 
 export default function NavBar() {
   const router = useRouter();
@@ -26,7 +27,10 @@ export default function NavBar() {
 
   return (
     <nav className="flex items-center justify-between border-b border-neutral-200 px-6 py-4">
-      <Link href="/" className="font-semibold">GridSpec</Link>
+      <Link href="/" className="flex items-center gap-2 font-semibold">
+        <Logo className="h-6 w-6" />
+        GridSpec
+      </Link>
       <div className="flex items-center gap-4 text-sm">
         <Link href="/search" className="hover:underline">Search</Link>
         <Link href="/bom" className="hover:underline">BOM</Link>
